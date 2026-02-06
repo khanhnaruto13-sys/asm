@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="shared/layout :: layout(~{::body})">
+
+<body>
+
+<!-- CSS đặt NGAY trong file -->
+<style>
+    .product-img {
+        width: 100%;
+        height: 240px;        /* TẤT CẢ ẢNH CAO GIỐNG NHAU */
+        object-fit: cover;   /* CẮT ẢNH, KHÔNG MÉO */
+    }
+</style>
+
+<h2 class="mb-4 text-center">Danh sách sản phẩm mới</h2>
+<div class="px-3 px-md-4">
+    <div class="row g-4 justify-content-center">
+
+        <!-- Lặp danh sách sản phẩm từ DB -->
+        <div class="col-lg-3 col-md-4 col-sm-6"
+             th:each="p : ${products}">
+
+            <div class="card h-100 shadow">
+                <!-- Ảnh đã được thu nhỏ về cùng kích thước -->
+                <img th:src="${p.image}"
+                     class="card-img-top product-img"
+                     th:alt="${p.name}">
+
+                <div class="card-body text-center d-flex flex-column">
+                    <h5 class="card-title mb-2"
+                        th:text="${p.name}"></h5>
+
+                    <p class="text-danger fw-semibold mb-3"
+                       th:text="${#numbers.formatDecimal(p.price,0,'COMMA',0,'POINT')} + ' đ'">
+                    </p>
+
+                    <a th:href="@{'/products/detail/' + ${p.id}}"
+                       class="btn btn-outline-primary mt-auto">
+                        Xem chi tiết
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

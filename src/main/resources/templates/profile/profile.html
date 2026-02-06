@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="shared/layout :: layout(~{::body})">
+
+<body>
+
+<h2 class="mb-4 text-center">Thông tin cá nhân</h2>
+
+<div class="px-3 px-md-4">
+    <div class="row g-4">
+
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body">
+                    <p><b>Họ tên:</b> Nguyễn Văn A</p>
+                    <p><b>Email:</b> a@gmail.com</p>
+                    <button class="btn btn-warning btn-sm">
+                        Cập nhật
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card shadow">
+                <table class="table mb-0 text-center">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Mã</th>
+                        <th>Ngày</th>
+                        <th>Tổng</th>
+                        <th>TT</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>DH01</td>
+                        <td>10/01</td>
+                        <td>599.000đ</td>
+                        <td>OK</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
