@@ -8,4 +8,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // LẤY SẢN PHẨM MỚI NHẤT TRƯỚC
     List<Product> findAllByOrderByCreatedAtDesc();
+
 }

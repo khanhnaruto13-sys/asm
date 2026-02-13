@@ -2,9 +2,15 @@ package com.example.asm1.controller;
 
 import com.example.asm1.entity.Product;
 import com.example.asm1.repository.ProductRepository;
+import com.example.asm1.repository.CartItemRepository;
 import com.example.asm1.service.ProductService;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,82 +21,77 @@ import java.io.IOException;
 @RequestMapping("/products")
 public class ProductController {
 
-    // Repository dùng để truy vấn trực tiếp sản phẩm
     @Autowired
     private ProductRepository productRepository;
 
-    // Service xử lý nghiệp vụ (lưu sản phẩm + upload ảnh)
     @Autowired
     private ProductService productService;
 
-    // ===== DANH SÁCH SẢN PHẨM (NGƯỜI DÙNG) =====
+    // ⭐ THÊM 2 CÁI NÀY
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    // ===== DANH SÁCH SẢN PHẨM =====
     @GetMapping("")
     public String list(Model model) {
-
-        // Lấy toàn bộ sản phẩm từ DB
         model.addAttribute("products", productRepository.findAll());
-
-        // Trả về trang danh sách sản phẩm
         return "product/list";
     }
 
-    // ===== CHI TIẾT SẢN PHẨM =====
+    // ===== CHI TIẾT =====
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
-
-        // Lấy sản phẩm theo id và truyền sang view
         model.addAttribute("product",
                 productRepository.findById(id).orElse(null));
-
         return "product/detail";
     }
 
-    // ===== TRANG QUẢN LÝ SẢN PHẨM (ADMIN) =====
+    // ===== CRUD ADMIN =====
     @GetMapping("/crud")
     public String crud(Model model) {
-
-        // Danh sách sản phẩm để hiển thị bảng
         model.addAttribute("products", productRepository.findAll());
-
-        // Đối tượng product rỗng cho form thêm mới
         model.addAttribute("product", new Product());
-
         return "product/crud";
     }
 
-    // ===== LOAD DỮ LIỆU SẢN PHẨM LÊN FORM ĐỂ SỬA =====
+    // ===== EDIT =====
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable Long id, Model model) {
-
-        // Sản phẩm cần sửa
         model.addAttribute("product",
                 productRepository.findById(id).orElse(null));
-
-        // Danh sách sản phẩm để hiển thị bảng
         model.addAttribute("products", productRepository.findAll());
-
         return "product/crud";
     }
 
-    // ===== THÊM MỚI / CẬP NHẬT SẢN PHẨM =====
+    // ===== CREATE / UPDATE =====
     @PostMapping("/create")
     public String create(
-            @ModelAttribute Product product,      // Dữ liệu sản phẩm từ form
-            @RequestParam MultipartFile imageFile  // File ảnh upload
+            @ModelAttribute Product product,
+            @RequestParam MultipartFile imageFile
     ) throws IOException {
 
-        // Gọi service để xử lý lưu sản phẩm + upload ảnh
         productService.save(product, imageFile);
-
-        // Sau khi lưu → quay lại trang quản lý
         return "redirect:/products/crud";
     }
 
-    // ===== XOÁ SẢN PHẨM =====
+    // ===== DELETE =====
     @GetMapping("/delete/{id}")
+    @Transactional
     public String delete(@PathVariable Long id) {
 
-        // Xoá sản phẩm theo id
+        // 1. Xóa cart trước
+        cartItemRepository.deleteByProductId(id);
+
+        // 2. Xóa order_details bằng SQL
+        entityManager.createNativeQuery(
+                        "DELETE FROM order_details WHERE product_id = ?"
+                )
+                .setParameter(1, id)
+                .executeUpdate();
+        // 3. Xóa product
         productRepository.deleteById(id);
 
         return "redirect:/products/crud";
