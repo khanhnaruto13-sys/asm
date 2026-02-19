@@ -1,8 +1,8 @@
 package com.example.asm1.controller;
 
 import com.example.asm1.entity.Product;
-import com.example.asm1.repository.ProductRepository;
 import com.example.asm1.repository.CartItemRepository;
+import com.example.asm1.repository.ProductRepository;
 import com.example.asm1.service.ProductService;
 
 import jakarta.persistence.EntityManager;
@@ -27,21 +27,37 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    // ⭐ THÊM 2 CÁI NÀY
     @Autowired
     private CartItemRepository cartItemRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    // ===== DANH SÁCH SẢN PHẨM =====
+    // ===== LIST =====
     @GetMapping("")
     public String list(Model model) {
         model.addAttribute("products", productRepository.findAll());
         return "product/list";
     }
 
-    // ===== CHI TIẾT =====
+    // ===== FILTER =====
+    @GetMapping("/filter")
+    public String filter(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Double maxPrice,
+            Model model
+    ) {
+
+        model.addAttribute("products",
+                productRepository.filterProduct(keyword, maxPrice));
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("maxPrice", maxPrice);
+
+        return "product/list";
+    }
+
+    // ===== DETAIL =====
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("product",
@@ -49,7 +65,7 @@ public class ProductController {
         return "product/detail";
     }
 
-    // ===== CRUD ADMIN =====
+    // ===== CRUD =====
     @GetMapping("/crud")
     public String crud(Model model) {
         model.addAttribute("products", productRepository.findAll());
@@ -82,16 +98,14 @@ public class ProductController {
     @Transactional
     public String delete(@PathVariable Long id) {
 
-        // 1. Xóa cart trước
         cartItemRepository.deleteByProductId(id);
 
-        // 2. Xóa order_details bằng SQL
         entityManager.createNativeQuery(
                         "DELETE FROM order_details WHERE product_id = ?"
                 )
                 .setParameter(1, id)
                 .executeUpdate();
-        // 3. Xóa product
+
         productRepository.deleteById(id);
 
         return "redirect:/products/crud";

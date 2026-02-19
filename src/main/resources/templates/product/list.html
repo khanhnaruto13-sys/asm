@@ -7,15 +7,43 @@
 <h2 class="mb-4 text-center">Danh sách sản phẩm</h2>
 
 <div class="px-3 px-md-4">
+
+    <!-- ===== FORM FILTER ===== -->
+    <form th:action="@{/products/filter}" method="get" class="row mb-4">
+
+        <div class="col-md-4">
+            <input type="text"
+                   name="keyword"
+                   class="form-control"
+                   placeholder="Nhập tên sản phẩm (vd: áo)"
+                   th:value="${keyword}">
+        </div>
+
+        <div class="col-md-4">
+            <select name="maxPrice" class="form-select">
+                <option value="">-- Chọn giá --</option>
+                <option value="100000">Dưới 100k</option>
+                <option value="300000">Dưới 300k</option>
+                <option value="500000">Dưới 500k</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100">
+                Lọc sản phẩm
+            </button>
+        </div>
+
+    </form>
+
+    <!-- ===== LIST PRODUCT ===== -->
     <div class="row g-4">
 
-        <!-- LẶP THEO DANH SÁCH PRODUCTS TỪ DB -->
         <div class="col-lg-3 col-md-4 col-sm-6"
              th:each="p : ${products}">
 
             <div class="card h-100 shadow">
 
-                <!-- ẢNH SẢN PHẨM -->
                 <img th:src="${p.image}"
                      th:alt="${p.name}"
                      class="card-img-top"
@@ -23,17 +51,14 @@
 
                 <div class="card-body text-center p-2">
 
-                    <!-- TÊN -->
                     <h5 class="card-title"
                         th:text="${p.name}">
                     </h5>
 
-                    <!-- GIÁ -->
                     <p class="text-danger fw-semibold"
                        th:text="${#numbers.formatDecimal(p.price,0,'COMMA',0,'POINT')} + ' đ'">
                     </p>
 
-                    <!-- LINK CHI TIẾT -->
                     <a th:href="@{/products/detail/{id}(id=${p.id})}"
                        class="btn btn-outline-primary">
                         Xem chi tiết
@@ -45,6 +70,7 @@
         </div>
 
     </div>
+
 </div>
 
 </body>
