@@ -21,4 +21,8 @@ public class User {
 
     // ADMIN | USER
     private String role;
+
+    public boolean isAdmin(){
+        return "ADMIN".equalsIgnoreCase(this.role);
+    }
 }

@@ -16,7 +16,8 @@
         <input type="email"
                name="email"
                class="form-control"
-               placeholder="Nhập email">
+               placeholder="Nhập email"
+               required>
     </div>
 
     <!-- PASSWORD -->
@@ -25,7 +26,8 @@
         <input type="password"
                name="password"
                class="form-control"
-               placeholder="Nhập mật khẩu">
+               placeholder="Nhập mật khẩu"
+               required>
     </div>
 
     <!-- ERROR MESSAGE -->
@@ -39,6 +41,12 @@
             class="btn btn-primary w-100 mb-3">
         Đăng nhập
     </button>
+
+    <!-- GOOGLE LOGIN -->
+    <a th:href="@{/auth/google}"
+       class="btn btn-danger w-100 mb-3">
+        Đăng nhập bằng Google
+    </a>
 
     <!-- REGISTER LINK -->
     <div class="text-center">

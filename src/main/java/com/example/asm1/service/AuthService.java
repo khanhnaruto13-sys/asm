@@ -9,4 +9,6 @@ public interface AuthService {
     void register(String fullname, String email, String password);
 
     int getCartCount(User user);
+
+    User findOrCreateGoogleUser(String fullname, String email);
 }
